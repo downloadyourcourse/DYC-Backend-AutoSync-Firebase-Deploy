@@ -1,0 +1,22 @@
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+
+const saleSchema = new Schema({
+    purchaseDate: { type: Date, required: true },
+    purchasedForPrice: { type: Number, required: true },
+    partOfCombo: { type: Boolean, default: false },
+    comboDetails: { type: String },
+    isRefunded: { type: Boolean, default: false },
+    refundDetails: { type: String },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // MongoDb reference to user
+    listingId: { type: String, immutable: true  },  // Internal system id displayed on website.
+    listing: { type: mongoose.Schema.Types.ObjectId, ref: 'Listing' }, // MongoDb reference to Listing
+}, { timestamps: true });
+
+
+// **Manual Indexing Logic** 
+saleSchema.index({ 'user': 1 }); // Index the 'user' field for faster search 
+saleSchema.index({ 'listingId': 1 }); // Index the 'listingId' field for faster search 
+saleSchema.index({ 'listing': 1 }); // Index the 'listing' field for faster search 
+
+module.exports = mongoose.model('Sale', saleSchema);
