@@ -1,5 +1,7 @@
 const express = require('express');
 const connectDB = require('./config/db')
+const cors = require('cors');
+const helmet = require('helmet');
 const app = express();
 const port = process.env.PORT || 5000;                   //importing port value from .env file and if fails falls to a default value.
 const listingRoutes = require("./routes/listingRoutes");
@@ -20,6 +22,11 @@ connectDB().then(() => {
     console.error("Server failed to start due to DB connection error", err);
   });
 
+
+
+// Apply security middleware
+app.use(helmet());  // Protects against common security vulnerabilities
+app.use(cors());    // Enables Cross-Origin Resource Sharing
 
   //Body Parser Middlewares
 app.use(express.json());  // for raw jsons
