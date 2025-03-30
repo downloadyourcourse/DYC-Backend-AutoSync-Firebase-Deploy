@@ -7,7 +7,6 @@ const port = process.env.PORT || 5000;                   //importing port value 
 const listingRoutes = require("./routes/listingRoutes");
 const serverHealthRoutes = require("./routes/serverHealth");
 
-// connectDB();
 
 // app.listen(port, () => console.log(`Server is running on port ${port}`));
 
