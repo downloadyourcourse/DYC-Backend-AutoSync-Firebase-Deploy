@@ -45,5 +45,5 @@ app.use('/api/listing', listingRoutes);
 app.use('/api/health', serverHealthRoutes);
 
 
-// Firebase Cloud Function Export. ONLY RELVANT TO FIREBASE/ FIREBASE FUNCTIONS.
-exports.api = functions.https.onRequest(app);
+// Export the express app for import in Functions/index.js import. ONLY RELVANT TO FIREBASE/ FIREBASE FUNCTIONS and Normal Express app won't run because of no presence of app.listen()
+module.exports = app;
