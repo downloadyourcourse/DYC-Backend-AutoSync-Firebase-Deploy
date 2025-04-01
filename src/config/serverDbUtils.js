@@ -1,7 +1,6 @@
-// functions
-const MONGO_US_CENTRAL1_LOWA= 'mongodb+srv://downloadyourcourse:1GYbeiYYXDOpN7M0@downloadyourcourse-clus.jyistau.mongodb.net/downloadyourcourse_prod?retryWrites=true&w=majority&appName=DownloadYourCourse-Cluster-Production-GCP-us-central1-lowa';
-const MONGO_EUROPE_WEST1_BELGIUM= 'mongodb+srv://downloadyourcourse:1GYbeiYYXDOpN7M0@downloadyourcourse-clus.5hcfeqy.mongodb.net/downloadyourcourse_prod?retryWrites=true&w=majority&appName=DownloadYourCourse-Cluster-Production-GCP-europe-west1-belgium';
-const MONGO_ASIA_EAST1_TAIWAN= 'mongodb+srv://downloadyourcourse:1GYbeiYYXDOpN7M0@downloadyourcourse-clus.0knwzn5.mongodb.net/downloadyourcourse_prod?retryWrites=true&w=majority&appName=DownloadYourCourse-Cluster-Production-GCP-asia-east1-taiwan';
+// MONGO URIs will be added here as a hardcoded values during auto deployment from github.
+// These values will be later used in the below code. This is done for security reasons to avoid URIs exposure to others.
+// Naming convention of URIs: const MONGO_URI_US_CENTRAL1_LOWA, const MONGO_URI_EUROPE_WEST1_BELGIUM, const MONGO_URI_ASIA_EAST1_TAIWAN
 
 
 // when we create a firebase function like: exports.api_dyc_us_central1_lowa = onRequest({ region: "us-central1" }, app);
@@ -20,13 +19,13 @@ return undefined
 }
 
 const getMongoUri = ( region ) => {
-if (region === "us_central1_lowa") return MONGO_US_CENTRAL1_LOWA;
-if (region === "europe_west1_belgium") return MONGO_EUROPE_WEST1_BELGIUM;
-if (region === "asia_east1_taiwan") return MONGO_ASIA_EAST1_TAIWAN;
+if (region === "us_central1_lowa") return MONGO_URI_US_CENTRAL1_LOWA;
+if (region === "europe_west1_belgium") return MONGO_URI_EUROPE_WEST1_BELGIUM;
+if (region === "asia_east1_taiwan") return MONGO_URI_ASIA_EAST1_TAIWAN;
 }
 
 const getMongoUriForWrite = () => {
-    return this.MONGO_US_CENTRAL1_LOWA;
+    return this.MONGO_URI_US_CENTRAL1_LOWA;
 }
 
 module.exports = {getRegion, getMongoUri, getMongoUriForWrite}
