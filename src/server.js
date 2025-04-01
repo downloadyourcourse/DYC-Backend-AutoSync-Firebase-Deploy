@@ -7,7 +7,7 @@ const listingRoutes = require("./routes/listingRoutes");
 const serverHealthRoutes = require("./routes/serverHealth");
 
 
-// starting server
+// starting server.
 console.log('Server Initializing...')
 
 
