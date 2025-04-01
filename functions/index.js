@@ -9,6 +9,15 @@
 
 const {onRequest} = require("firebase-functions/v2/https");
 const logger = require("firebase-functions/logger");
+const app = require("./src/server")
+
+
+// Deploy functions in different regions
+exports.api_dyc_us_central1_lowa = onRequest({ region: "us-central1" }, app);
+exports.api_dyc_europe_west1_belgium = onRequest({ region: "europe-west1" }, app); // Belgium
+exports.api_dyc_asia_east1_taiwan = onRequest({ region: "asia-east1" }, app); // Taiwan
+
+
 
 // Create and deploy your first functions
 // https://firebase.google.com/docs/functions/get-started
