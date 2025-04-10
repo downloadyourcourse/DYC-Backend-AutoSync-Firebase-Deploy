@@ -6,6 +6,16 @@ const listingSchema = new mongoose.Schema({
     listingTitle: { type: String, required: true, unique: true }, // Name of the listing
     slug: { type: String, required: true, unique: true }, // Slug for URL structure - This listing will be retrieved from the db using slug when a user visits website.
     
+    // metaData is purely for seo purposes, author, title and other info can be different from the actual value
+    metaData: {
+        seoTitle: { type: String, required: true},  // The Title value that will come in the search results of the search engine.
+        seoDescription: { type:String, required: true }, // the description of the page and will be showed in the search results under the title
+        seoAuthor: { type: string, required: true }, // Author of the page as per your seo requirements
+        seoRobots: { type: string }, // noindex, no follow, index , follow for the search enginge robots crawlers and based on this tag they will crawl
+        CanonicalUrl: { type: string }, // Tells search engines what the official URL of this content is, which helps prevent duplicate indexing. If this is the real content leave it blank or store your website url. Helpful when there are multiple domains pointing to the same content. Avoid Duplicate URLs Even your own site can serve the same content under multiple URLs accidentally:  https://downloadyourcourses.com/page, https://www.downloadyourcourses.com/page, https://downloadyourcourses.com/page?ref=abc. All technically show the same thing. Canonical URL tells Google: “Treat this one as the main version.” so the google only ranks the canonical url on search results and leave others. Use the full, clean, final URL: 'https://downloadyourcourses.com/currency-strength-meter'
+        SocialMediaShareImageUrl: { type:string } // link of the url that will be visible when the link of the post, website will be shared on whatsapp, twitter, insta, fb wtc
+    },
+
     // HTML body and CSS styles for the webpage related to the item
     pageMarkupAndStyles: { 
         htmlBody: { type: String, required: true },    // HTML body content of the page
