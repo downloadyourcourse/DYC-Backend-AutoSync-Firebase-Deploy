@@ -8,12 +8,12 @@ const listingSchema = new mongoose.Schema({
     
     // metaData is purely for seo purposes, author, title and other info can be different from the actual value
     metaData: {
-        seoTitle: { type: String, required: true},  // The Title value that will come in the search results of the search engine.
-        seoDescription: { type: String, required: true }, // the description of the page and will be showed in the search results under the title
+        seoTitle: { type: String, required: true,  maxlength: [65, 'SEO title should not exceed 60 + 5 characters. Recommended Length: 60'] },  // The Title value that will come in the search results of the search engine.
+        seoDescription: { type: String, required: true, maxlength: [170, 'SEO title should not exceed 160 + 10 characters. Recommended Length: 160'] }, // the description of the page and will be showed in the search results under the title
         seoAuthor: { type: String, required: true }, // Author of the page as per your seo requirements
-        seoRobots: { type: String }, // noindex, no follow, index , follow for the search enginge robots crawlers and based on this tag they will crawl
-        CanonicalUrl: { type: String }, // Tells search engines what the official URL of this content is, which helps prevent duplicate indexing. If this is the real content leave it blank or store your website url. Helpful when there are multiple domains pointing to the same content. Avoid Duplicate URLs Even your own site can serve the same content under multiple URLs accidentally:  https://downloadyourcourses.com/page, https://www.downloadyourcourses.com/page, https://downloadyourcourses.com/page?ref=abc. All technically show the same thing. Canonical URL tells Google: “Treat this one as the main version.” so the google only ranks the canonical url on search results and leave others. Use the full, clean, final URL: 'https://downloadyourcourses.com/currency-strength-meter'
-        SocialMediaShareImageUrl: { type: String } // link of the url that will be visible when the link of the post, website will be shared on whatsapp, twitter, insta, fb wtc
+        seoRobots: { type: String, enum: {values: ['index', 'noindex', 'follow', 'nofollow', 'index, follow', 'index, nofollow', 'noindex, follow', 'noindex, nofollow' ], message: 'Invalid value for seoRobots. Must be small caps and one of: index, noindex, follow, nofollow, or their valid combinations.' } }, // noindex, no follow, index , follow for the search enginge robots crawlers and based on this tag they will crawl
+        CanonicalUrl: { type: String, match: [ /^https?:\/\/(www\.)?[\w\-]+(\.[\w\-]+)+([\/?#][^\s]*)?$/, 'Please provide a valid canonical URL. Example: https://yourwebsite.com/page'] }, // Tells search engines what the official URL of this content is, which helps prevent duplicate indexing. If this is the real content leave it blank or store your website url. Helpful when there are multiple domains pointing to the same content. Avoid Duplicate URLs Even your own site can serve the same content under multiple URLs accidentally:  https://downloadyourcourses.com/page, https://www.downloadyourcourses.com/page, https://downloadyourcourses.com/page?ref=abc. All technically show the same thing. Canonical URL tells Google: “Treat this one as the main version.” so the google only ranks the canonical url on search results and leave others. Use the full, clean, final URL: 'https://downloadyourcourses.com/currency-strength-meter'
+        SocialMediaShareImageUrl: { type: String, match: [ /^https?:\/\/(www\.)?[\w\-]+(\.[\w\-]+)+([\/?#][^\s]*)?\.(jpg|jpeg|png|webp|gif)$/i, 'Please provide a valid image URL with proper extension. Example: https://cdn.yoursite.com/cover-image.jpg' ] } // link of the url that will be visible when the link of the post, website will be shared on whatsapp, twitter, insta, fb wtc
     },
 
     // HTML body and CSS styles for the webpage related to the item
@@ -25,7 +25,7 @@ const listingSchema = new mongoose.Schema({
     // Type of digital product - only valid from one of the enums mentioned.
     itemType: { 
         type: String, 
-        enum: ["course", "tool", "ebook & notes", "video", "template", "other"], 
+        enum: {values: ["course", "tool", "ebook & notes", "video", "template", "other"],  message: 'Invalid value for itemType. Must be small caps and one of: "course", "tool", "ebook & notes", "video", "template", "other".'}, 
         required: true
     },
 
