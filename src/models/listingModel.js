@@ -10,7 +10,7 @@ const listingSchema = new mongoose.Schema({
     metaData: {
         seoTitle: { type: String, required: true,  maxlength: [120, 'SEO title should not exceed 60 + 60 = 120 characters. Recommended Length: 60 to avoid truncation in search results'] },  // The Title value that will come in the search results of the search engine.
         seoDescription: { type: String, required: true, maxlength: [200, 'SEO title should not exceed 160 + 40 characters. Recommended Length: 160'] }, // the description of the page and will be showed in the search results under the title
-        seoAuthor: [{ // Author of the page as per your seo requirements e.g. [{authorName: DYC, authorType: Organization}, {authorName: Peter, authorType: Person}]
+        seoAuthors: [{ // Author of the page as per your seo requirements e.g. [{authorName: DYC, authorType: Organization}, {authorName: Peter, authorType: Person}]
             authorName: { type: String, required: true}, // Converts value to lowercase in create & update
             authorType: { 
                 type: String, 
