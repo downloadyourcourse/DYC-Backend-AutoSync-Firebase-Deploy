@@ -68,6 +68,7 @@ const createListing = async (req, res) => {
             pricing,
             OfficialAuthorName,
             officialBrandName,
+            isPurchasableProduct
         } = req.body;
 
 
@@ -80,13 +81,32 @@ const createListing = async (req, res) => {
             return res.status(500).json({ success: false, message: "Internal Server Error - Error generating unique listing ID", error: error.message });
         }
 
-        // 1️ Create Pricing Document
-        const newPricingModelData = { listingId: req.body.listingId, listingTitle: listingTitle, ...pricing };  // only send the required data to pricing model and not the complete req body
-        const createdPricingDocument = await Pricing.create([newPricingModelData], { session });  // atomicity syntax
+        // 1️ Create Pricing Document if isPurchasableProduct is true. Otherwise no Pricing document is created and no reference is added
+        // to the listing document. Applicable for blogs etc.
+        let newPricingModelData; // created outside if block so that they are available in the complete code not just inside the if because let and const are block scoped.
+        let createdPricingDocument;
 
-        // 2️ Create Listing Document and add reference to the Pricing Document
-        const newListingData = { ...req.body, pricing: createdPricingDocument[0]._id }; // adding reference to Pricing document in the form of its id
-        const newListing = await Listing.create([newListingData], { session }); // atomicity syntax
+        // strict checking isPurchasableProduct === false because there are chances, isProductPurchasable is even not added to the
+        // request body and this way it will be undefined but still the user might want to create a pricing document because
+        // in mongoose its default value is set to true.
+        if(isPurchasableProduct === false){
+            console.log('Pricing document will not be created and no reference will be given in listing document. isPurchasableProduct flag set to false.')
+        }
+        else{
+            newPricingModelData = { listingId: req.body.listingId, listingTitle: listingTitle, ...pricing };  // only send the required data to pricing model and not the complete req body
+            createdPricingDocument = await Pricing.create([newPricingModelData], { session });  // atomicity syntax
+        }
+
+        // 2️ Create Listing Document and add reference to the Pricing Document if createdPricingDocument is available or isPurchasableProduct is not false.
+        let newListing; // created outside if block so that they are available in the complete code not just inside the if because let and const are block scoped.
+        if(createdPricingDocument){
+            const newListingData = { ...req.body, pricing: createdPricingDocument[0]._id }; // adding reference to Pricing document in the form of its id
+            newListing = await Listing.create([newListingData], { session }); // atomicity syntax
+        }
+        else{ // if else block runs, this means isProductPurchasable was false and hence we do not have pricingDocument and thus pricing reference will not be added. Applicable when it is a blog or related listing. Pricing is not set to required: true in mongoose listing schema. so its optional.
+            newListing = await Listing.create([ { ...req.body } ], { session }); // atomicity syntax
+        }
+        
 
         // Commit the Transaction
         await session.commitTransaction();
@@ -151,7 +171,13 @@ const deleteListing = async (req, res) => {
         if (!deletedListingDoc) {
             return res.status(404).json({ success: false, message: "Listing not found." })
         }
-        const deletedRefPricingDoc = await Pricing.findOneAndDelete({_id: deletedListingDoc.pricing}, { session }); // atomicity syntax
+
+        let deletedRefPricingDoc;
+
+        // if pricing document does not exist inside the listing document (in case of a blog listing, it will not contain reference of pricing document). So avoiding findOneAndDelete for pricing document.
+        if(deletedListingDoc.pricing){
+            deletedRefPricingDoc = await Pricing.findOneAndDelete({_id: deletedListingDoc.pricing}, { session }); // atomicity syntax
+        }
 
         // Commit the Transaction
         await session.commitTransaction();
@@ -161,7 +187,7 @@ const deleteListing = async (req, res) => {
             success: true,
             message: 'Listing and pricing details deleted successfully.',
             listing: deletedListingDoc,
-            pricing: deletedRefPricingDoc
+            pricing: deletedRefPricingDoc || 'Pricing document in database did not exist for the deleted listing. Possibly it was non sellable. e.g. a blog.'
         });
 
 
@@ -239,7 +265,8 @@ const updateListing = async (req, res) => {
 
         let updatedPricingDoc;
 
-        if( (pricingUpdateFields && Object.keys(pricingUpdateFields).length > 0) || listingUpdateFields.listingTitle){
+        // additional check for updatedListingDoc.isPurchasableProduct, because if it was false then definitely its a blog or similar no sellable listing and it will not contain a pricing reference or document created for it. So avoiding the below code for unexpected behaviour.
+        if( (pricingUpdateFields && (Object.keys(pricingUpdateFields).length > 0) && updatedListingDoc.isPurchasableProduct ) || listingUpdateFields.listingTitle && updatedListingDoc.isPurchasableProduct ){
             
             // assigning pricing doc id which is stored in the listing doc.
             queryPricing = { _id: updatedListingDoc.pricing }
@@ -255,12 +282,14 @@ const updateListing = async (req, res) => {
                 { $set: dotNotationedPricingUpdateFields },
                 { session, new: true, runValidators: true }) // atomicity syntax and 'new: true' ensures the updated document is returned instead of the original.
             } else{
-                console.log('\n\nthis code ran.....\n\n')
-                updatedPricingDoc = await Pricing.findOne({ _id: updatedListingDoc.pricing }, null, { session });
+                // check if updatedListingDoc.isPurchasableProduct is true, if it is false then no pricing document exists.
+                if( updatedListingDoc.isPurchasableProduct ) updatedPricingDoc = await Pricing.findOne({ _id: updatedListingDoc.pricing }, null, { session });
             }
 
-            // if the pricing doc is empty but the listing doc is found, it means something did not work as expected.
-            if(!updatedPricingDoc){
+            // if the pricing doc is empty but the listing doc is found, it means something did not work as expected. But with a condition
+            // updatedListingDoc.isPurchasableProduct is true. That is the listing should have a pricing document as expected. because if its
+            // false, it is expected the pricing document was not created and hence will not be returned.
+            if(!updatedPricingDoc && updatedListingDoc.isPurchasableProduct){
                 throw new Error("Internal Server Error. Something went wrong. Aborting changes!");
             }
 
@@ -272,7 +301,7 @@ const updateListing = async (req, res) => {
             success: true,
             message: 'Listing and pricing details updated successfully.',
             listing: updatedListingDoc,
-            pricing: updatedPricingDoc
+            pricing: updatedPricingDoc || 'Pricing Document was not tried be updated or found because isPurchasableProduct flag was set to false. Possibly the listing is a blog or something unsellable.'
         });
 
 

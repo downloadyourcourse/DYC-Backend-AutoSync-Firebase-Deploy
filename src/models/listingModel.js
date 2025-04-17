@@ -49,9 +49,14 @@ const listingSchema = new mongoose.Schema({
     // Type of digital product - only valid from one of the enums mentioned.
     itemType: {
         type: String,
-        enum: { values: ["course", "tool", "ebook & notes", "video", "template", "other"], message: 'Invalid value for itemType. Must be small caps and one of: "course", "tool", "ebook & notes", "video", "template", "other".' },
+        enum: { values: ["course", "tool" ,"purchase-package" ,"blog" ,"ebook & notes", "video", "template", "other"], message: 'Invalid value for itemType. Must be small caps and one of: "course", "tool", "ebook & notes", "video", "template", "other".' },
         required: true
     },
+
+    // If the product being listed is purchasable? like if its a course/ purchase-package its true and if its a blog, its false.
+    // its dependent on itemType. Also, if its not purchasable pricing document will not be created and ref will not be added to the
+    // listing document. This logic will be handled in listing controller. Defalut value is set to true.
+    isPurchasableProduct: { type: Boolean, default: true },
 
     // Tags for searching, filtering, and sorting the listing. Some of these to be displayed on website and others to be hidden.
     tags: [{
@@ -84,6 +89,15 @@ const listingSchema = new mongoose.Schema({
 
 // Index the 'tags.tagValue' field for faster search and filtering by tags
 listingSchema.index({ 'tags.tagValue': 1 });
+
+// Index the 'itemType' field for faster search and filtering by itemType. Like get all blogs, courses etc
+listingSchema.index({ 'itemType': 1 });
+
+// Index the 'officialAuthorName' field for faster search and filtering by Author. Like get courses by a particular author
+listingSchema.index({ 'OfficialAuthorName': 1 });
+
+// Index the 'officialBrandName' field for faster search and filtering by Brand/ Organization. Like get courses by a particular brand or organization
+listingSchema.index({ 'officialBrandName': 1 });
 
 // Additional compound index example for advanced queries (optional):
 // listingSchema.index({ 'tags.tagValue': 1, 'itemType': 1 });
