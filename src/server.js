@@ -48,7 +48,7 @@ app.get('/', (req, res) => {
 app.use('/api/listing', listingRoutes);
 
 
-//routes related to health of the server for load-balancing.
+//routes related to health of the server for load-balancing
 app.use('/api/health', serverHealthRoutes);
 
 app.get('/test', (req, res) => {
