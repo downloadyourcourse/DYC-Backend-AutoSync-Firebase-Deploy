@@ -47,7 +47,7 @@ jobs:
         run: |
           echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}' > gcloud-key.json
           export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/gcloud-key.json
-          firebase deploy --only functions --project personal-projects-416d2
+          firebase deploy --only functions
 
       - name: Notify Deployment Success
         run: echo "Deployment to Firebase Functions completed successfully!"
