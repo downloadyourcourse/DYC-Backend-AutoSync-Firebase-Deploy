@@ -43,13 +43,10 @@ jobs:
           npm ci  # Install dependencies inside the functions folder
           cd ..
 
-      - name: Authenticate to Google Cloud
+      - name: Authenticate and Deploy to Firebase
         run: |
           echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}' > gcloud-key.json
           export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/gcloud-key.json
-
-      - name: Deploy to Firebase Functions
-        run: |
           firebase deploy --only functions --project personal-projects-416d2
 
       - name: Notify Deployment Success
