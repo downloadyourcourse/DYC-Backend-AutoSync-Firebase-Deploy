@@ -47,4 +47,4 @@ to remove app.listen and instead use firebase syntax. The backend is located on 
 2. api_dyc_europe_west1_belgium
 3. api_dyc_us_central1_lowa
 
-I have used github actions workflow to auto deploy to firebase functions whenever there is any new push to the github. Also, the taiwan backend api is hardcoded to be always connected with taiwan mongodb atlas. Us central 1 backend api with the us central 1 backend api. And the Belgium backend api always connected with belgium database. The connection between backend api and db servers are made through Mongo URI. 
+I have used github actions workflow to auto deploy to firebase functions whenever there is any new push to the github. Also, the taiwan backend api is hardcoded to be always connected with taiwan mongodb atlas. Us central 1 backend api with the us central 1 backend api. And the Belgium backend api always connected with belgium database. The connection between backend api and db servers are made through Mongo URI.  
