@@ -232,7 +232,7 @@ const updateListing = async (req, res) => {
 
         // Updating 'listingTitle' directly in Pricing is not allowed to avoid data inconsistency. Update at listing level and it 
         // will automatically update in pricing
-        if ('listingTitle' in pricingUpdateFields) {
+        if (pricingUpdateFields && ('listingTitle' in pricingUpdateFields)) {
             return res.status(400).json({
                 success: false,
                 message: "Updating 'listingTitle' directly in Pricing is not allowed."
