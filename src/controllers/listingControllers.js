@@ -9,7 +9,6 @@ const converToDotNotation = require('../utils/convertToDotNotation')
 const getListings = async (req, res) => {
     try {
         const listings = await Listing.find({}, { pageMarkupAndStyles: 0 }).sort({ createdAt: -1 }) // excluding pageMarkupAndStyles field from the response because it is a heavy field and not required in the listing overview page where all the listings are fetched. Sorting the listings based on createdAt field in descending order to show the latest created listings first.
-        const listings = await Listing.find({}).sort({ createdAt: -1 })
         return res.status(200).json({ success: true, message: "Listings found.", listings: listings })
     } catch (error) {
         console.error('Unable to fetch listings: ', error);
